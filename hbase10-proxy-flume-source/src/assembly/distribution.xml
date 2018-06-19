@@ -14,7 +14,7 @@
       <excludes>
         <exclude>*:sources</exclude>
       </excludes>
-      				<outputDirectory>${flume.plugin.d}/${project.artifactId}/libext/</outputDirectory>
+      				<outputDirectory>${project.artifactId}/libext/</outputDirectory>
     </dependencySet>
   </dependencySets>
   
@@ -31,15 +31,8 @@
 			<includes>
 				<include>*.jar</include>
 			</includes>
-			<outputDirectory>${flume.plugin.d}/${project.artifactId}/lib/</outputDirectory>
+			<outputDirectory>${project.artifactId}/lib/</outputDirectory>
 		</fileSet>
-<!--  		<fileSet>
-			<directory>target/classes/lib</directory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-			<outputDirectory>${flume.plugin.d}/${project.artifactId}/libext/</outputDirectory>
-		</fileSet>-->
 	</fileSets>
 </assembly>
 

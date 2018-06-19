@@ -18,9 +18,9 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.client.replication.ReplicationAdmin;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.hbasejanitor.flume.HbaseMutationEvent;
 
 import junit.framework.TestCase;
+import org.hbasejanitor.hbase.event.HBase10Event;
 
 public class TestGetReplication extends TestCase {
   
@@ -72,12 +72,12 @@ public class TestGetReplication extends TestCase {
         assertEquals(flumeEvent.getHeaders().get("columnfamily"),"cf1");
         assertEquals(flumeEvent.getHeaders().get("qualifier"),"good");
         
-        DatumReader<HbaseMutationEvent> avroReader =
-            new SpecificDatumReader<HbaseMutationEvent>(HbaseMutationEvent.getClassSchema());
+        DatumReader<HBase10Event> avroReader =
+            new SpecificDatumReader<HBase10Event>(HBase10Event.getClassSchema());
         
         byte body[]=flumeEvent.getBody();
         BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(body, null);
-        HbaseMutationEvent ev = avroReader.read(null,decoder);
+        HBase10Event ev = avroReader.read(null,decoder);
         
         assertEquals("testreplication1", TestUtils.bytebufferToString(ev.getTable()));
         assertEquals("cf1", TestUtils.bytebufferToString(ev.getFamily()));
@@ -101,7 +101,7 @@ public class TestGetReplication extends TestCase {
         
         
         
-        //HbaseMutationEvent ev 
+        //HBase10Event ev 
       } catch (Exception e) {
         e.printStackTrace();
         fail(e.getMessage());

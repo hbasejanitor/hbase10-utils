@@ -131,18 +131,26 @@
 				    <rhelVersion>${rh.version}</rhelVersion>
 				</configuration>
 
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/distribution.xml</descriptor>
+					</descriptors>
+				</configuration>
 				<executions>
 					<execution>
 						<phase>package</phase>
 						<goals>
-							<goal>makeparcel</goal>
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
+
 			</plugin>
-
-	
-
 		</plugins>
 
 	</build>
