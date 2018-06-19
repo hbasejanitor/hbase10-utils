@@ -1,0 +1,10 @@
+**/target/*
+.idea
+*.iml
+.classpath
+.project
+.gitignore~
+.settings
+*.ipr
+*.iws
+**/*~

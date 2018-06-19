@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.hbasejanitor</groupId>
+  <artifactId>hbase-utilities</artifactId>
+  <packaging>pom</packaging>
+  <version>0.1-SNAPSHOT</version>
+  <name>Utilities for bhase 1.0</name>
+  <description>
+    A collection of utilities for hbase 1.0.
+  </description>
+  <inceptionYear>2017</inceptionYear>
+  <!-- Set here so we can consistently use the correct name, even on branches with
+       an ASF parent pom older than v15. Also uses the url from v18.
+    -->
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <modules>
+    <module>hbase10-event-model</module>   
+    <module>hbase10-kafka-proxy</module>     
+    <module>hbase10-proxy-flume-source</module>
+  </modules>
+
+  <properties>
+    <avro.version>1.7.7</avro.version>
+    <hbase10.version>1.2.0</hbase10.version>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <curator.version>2.7.1</curator.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+
+
+     <dependency>
+	<groupId>org.apache.curator</groupId>
+	<artifactId>curator-recipes</artifactId>
+	<version>${curator.version}</version>
+      </dependency>
+
+     
+	
+     <dependency>
+	<groupId>org.apache.curator</groupId>
+	<artifactId>curator-client</artifactId>
+	<version>${curator.version}</version>
+      </dependency>
+
+	
+     <dependency>
+	<groupId>org.apache.curator</groupId>
+	<artifactId>curator-framework</artifactId>
+	<version>${curator.version}</version>
+      </dependency>
+
+      
+      <dependency>
+	<groupId>org.apache.hbase</groupId>
+	<artifactId>hbase-server</artifactId>
+	<version>${hbase10.version}</version>
+      </dependency>
+
+      <dependency>
+	<groupId>org.apache.hbase</groupId>
+	<artifactId>hbase-annotations</artifactId>
+	<version>${hbase10.version}</version>
+      </dependency>
+
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-common</artifactId>
+      	<version>${hbase10.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-client</artifactId>
+      	<version>${hbase10.version}</version>
+    </dependency>
+      
+    <dependency>
+      <groupId>org.apache.avro</groupId>
+      <artifactId>avro</artifactId>
+      <version>${avro.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hbasejanitor</groupId>
+      <artifactId>hbase10-kafka-model</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-protocol</artifactId>
+      <version>${hbase10.version}</version>
+    </dependency>
+
+    
+    </dependencies>
+  </dependencyManagement>
+</project>
+  

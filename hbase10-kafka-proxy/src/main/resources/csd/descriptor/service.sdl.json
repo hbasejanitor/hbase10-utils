@@ -1,0 +1,198 @@
+// Licensed to Cloudera, Inc. under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  Cloudera, Inc. licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+{
+  "name" : "HBASE_1X_KAFKA_PROXY",
+  "label" : "Hhbase 1.X Kafka Proxy",
+  "description" : "A proxy that peers with hbase 1.X.  Maks sure you drop the parcel into the parcel-repo, and distribute it. ",
+  "version" : "2.2.0.cloudera2",
+  "compatibility" : { "cdhVersion" : { "min" : "5.8.0", "max" : "5" } },
+  "runAs" : {
+    "user" : "hbase",
+    "group" : "hbase",
+    "principal" : "hbase"
+  },
+  "inExpressWizard" : false,
+  "icon" : "images/icon.png",
+  "parcel" : {
+    "repoUrl" : "http://archive.cloudera.com/spark2/parcels/2.2.0.cloudera2/",
+    "requiredTags" : ["cdh"]
+  },
+  "serviceDependencies" : [
+    {
+      "name" : "HBASE",
+      "required" : "true"
+    }
+  ],
+  "parameters" : [
+    {
+      "name" : "proxy_routing_rules",
+      "label" : "Proxy Hbase Peer id",
+      "description" : "The Peer ID the proxy uses to receive replication events from hbase. ",
+      "configName" : "hbase.proxy.peer.id",
+      "default" : "hbase-kafka-proxy-conf/routing-rules.xml",
+      "type" : "string",
+      "required" : "true"
+    }
+  ],
+  "roles" : [
+    {
+      "name" : "HBASE_KAFKA_PROXY_SERVER",
+      "label" : "Hbase Proxy Server",
+      "pluralLabel" : "Hbase Proxy Servers",
+      "jvmBased": true,
+      "startRunner" : {
+        "program" : "scripts/control.sh",
+        "args" : [ "start" ],
+        "environmentVariables" : {
+          "PROXY_AUTO_PEER" : "${auto_peer}",
+          "PROXY_PEER_ID" : "${proxy_peer_id}",
+          "KEYSTORE_PASSWORD" : "${ssl_server_keystore_password}"
+        }
+      },
+      "kerberosPrincipals" : [
+        {
+          "name" : "HBASE_PROXY_PRINCIPAL",
+          "primary" : "${principal}",
+          "instance" : "${host}"
+        }
+      ],
+      // come back to this...
+      "externalLink" : {
+        "name" : "history_server_web_ui",
+        "label" : "History Server Web UI",
+        "url" : "http://${host}:${history_server_web_port}",
+        "secureUrl" : "https://${host}:${ssl_server_port}"
+      },
+      "topology" : { "minInstances" : 1 },
+      "logging" : {
+        "configFilename" : "hbase-kafka-proxy-conf/logback.xml",
+        "dir" : "/var/log/hbase-kafka-proxy",
+        "filename" : "hbase-kafka-proxy-${host}.log",
+        "modifiable" : true,
+        "loggingType" : "logback"
+      },
+      "parameters" : [
+        {
+          "name" : "proxy_peer_id",
+          "label" : "Proxy Hbase Peer id",
+          "description" : "The Peer ID the proxy uses to receive replication events from hbase. ",
+          "configName" : "hbase.proxy.peer.id",
+          "default" : "hbase10_kafka_proxy",
+          "type" : "string",
+          "required" : "true"
+        },
+        {
+          "name" : "auto_peer",
+          "label" : "Create peer to hbase automatically",
+          "description" : "When the service starts, if the peer id specified by proxy_peer_id exists, the service will automatically create the peer",
+          "configName" : "hbase.proxy.peer.autoenable",
+          "default" : false,
+          "type" : "boolean",
+          "required" : "true"
+        },
+        {
+          "name" : "auto_connect",
+          "label" : "Create peer to hbase automatically",
+          "description" : "When the service starts, if the peer id specified by proxy_peer_id exists, the service will automatically enable the peer",
+          "configName" : "hbase.proxy.peer.autoenable",
+          "default" : false,
+          "type" : "boolean",
+          "required" : "true"
+        },
+        {
+          "name" : "route_rules",
+          "label" : "Hbase mutation routing rules",
+          "description" : "A set of rules that route hbase mutations to specific kafka queues",
+          "configName" : "hbase.proxy.route.rules",
+          "default" : "<rules></rules>",
+          "type" : "string",
+          "required" : "true"
+        },
+        {
+          "name" : "proxy_zookeeper",
+          "label" : "zookeeper quorum to use",
+          "description" : "The zookeeper quorium for the proxy to use (defaults to the same one hbase uses)",
+          "configName" : "hbase.proxy.route.rules",
+          "default" : false,
+          "type" : "boolean",
+          "required" : "false"
+        },
+        {
+          "name" : "proxy_hbase_config",
+          "label" : "Hbase Configuration File",
+          "description" : "The configuration to use to connect to hbase",
+          "configName" : "hbase.proxy.route.rules",
+          "default" : "/etc/conf/hbase/hbase-site.xml",
+          "type" : "string",
+          "required" : "false"
+        },
+        {
+          "name" : "proxy_hbase_kafka_brokers",
+          "label" : "Kafka Brokers",
+          "description" : "Comma seperrated list of kafka hosts/ports",
+          "configName" : "hbase.proxy.kafka.hosts",
+          "type" : "string",
+          "required" : "true"
+        },
+        {
+          "name" : "proxy_hbase_kafka_connection_properties",
+          "label" : "Kafka Brokers",
+          "description" : "Comma seperrated list of kafka hosts/ports",
+          "configName" : "hbase.proxy.kafka.hosts",
+          "type" : "string",
+          "required" : "true"
+        },
+        {
+          "name" : "proxy_hbase_kafka_connection_properties_file",
+          "label" : "Kafka Brokers",
+          "description" : "Comma seperrated list of kafka hosts/ports",
+          "configName" : "hbase.proxy.kafka.hosts",
+          "type" : "string",
+          "required" : "true"
+        }
+      ],
+      "configWriter" : {
+        "generators" : [
+          {
+            "filename" : "hbase-kafka-proxy-conf/hbase-kafka-proxy-conf.conf",
+            "configFormat" : "properties",
+            "includedParams" : [
+              "proxy_peer_id",
+              "auto_peer",
+              "auto_connect",
+              "proxy_zookeeper",
+              "proxy_hbase_config"
+            ]
+          },
+          {
+            "filename" : "hbase-kafka-proxy-conf/hbase-kafka-proxy-route-rules.xml",
+            "configFormat" : "properties",
+            "includedParams" : [
+              "route_rules"
+            ]
+          }
+
+        ]
+      },
+      "healthAggregation" : {
+        "type" : "singleton"
+      }
+    }
+  ]
+
+}
+
+

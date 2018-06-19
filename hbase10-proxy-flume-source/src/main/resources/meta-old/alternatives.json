@@ -1,0 +1,8 @@
+{
+    "hbase10-proxy-flume-source": {
+      "destination": "/usr/lib/flume-ng/plugins.d/${project.artifactId}",
+      "source": "${project.artifactId}",
+      "priority": 10,
+      "isDirectory": true
+    }
+}

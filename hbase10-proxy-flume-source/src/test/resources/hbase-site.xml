@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<configuration>
+	<property><name>zookeeper.znode.parent</name><value>/hbase</value><source>hbase-default.xml</source></property>
+	<property><name>hbase.zookeeper.property.clientPort</name><value>9011</value></property>
+</configuration>
+
