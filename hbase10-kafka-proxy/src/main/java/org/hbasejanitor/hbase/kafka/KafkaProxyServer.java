@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
@@ -70,23 +71,7 @@ public class KafkaProxyServer extends Configured implements Tool {
 
   private static void printUsageAndExit(Options options, int exitCode) {
     HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp("hbase kafkaproxy start", "", options,
-            "\nTo run the kafka proxy as a daemon, execute " +
-                    "hbase-daemon.sh start|stop kafkaproxy " +
-                    "[--kafkabrokers <kafka brokers (comma delmited)>] " +
-                    "[-b <kafka brokers (comma delmited)>] " +
-                    "[--routerulesfile <file with rules to route to kafka "
-                    + "(defaults to kafka-route-rules.xm)>] " +
-                    "[-r <file with rules to route to kafka "
-                    + "(defaults to kafka-route-rules.xml)>] " +
-                    "[--kafkaproperties <Path to properties file that "
-                    + "has the kafka connection properties>] " +
-                    "[-f <Path to properties file that has the kafka "
-                    + "connection properties>] " +
-                    "[--peername name of hbase peer to use (defaults to hbasekafka)]  " +
-                    "[-p name of hbase peer to use (defaults to hbasekafka)]  " +
-                    "[--auto auto create peer]  " +
-                    "[-a auto create peer] \n", true);
+    formatter.printHelp("hbase org.hbasejanitor.hbase.kafka.KafkaProxyServer", "", options,"", true);
     System.exit(exitCode);
   }
 
@@ -105,15 +90,18 @@ public class KafkaProxyServer extends Configured implements Tool {
             "Create a peer auotmatically to the hbase cluster");
     options.addOption("f", "kafkaproperties", false,
             "Path to properties file that has the kafka connection properties");
-    options.addOption("r", "routerulesfile", false,
-            "file that has routing rules (defaults to conf/kafka-route-rules.xml");
 
+    Option opt = new Option("r", "routerulesfile", true, "file that has routing rules");
+    opt.setRequired(true);
+    options.addOption(opt);
+    
     CommandLine commandLine = null;
     try {
       commandLine = new PosixParser().parse(options, args);
     } catch (ParseException e) {
       LOG.error("Could not parse: ", e);
       printUsageAndExit(options, -1);
+      System.exit(-1);
     }
 
     boolean autoPeer = (commandLine.getOptionValue('p') ==null);
@@ -124,9 +112,7 @@ public class KafkaProxyServer extends Configured implements Tool {
     String kafkaServers = commandLine.getOptionValue('b');
 
     String routeRulesFile = commandLine.getOptionValue('r');
-    if (routeRulesFile==null) {
-      routeRulesFile = "conf/kafka-route-rules.xml";
-    }
+
     TopicRoutingRules routingRules = new TopicRoutingRules();
     try (FileInputStream fin = new FileInputStream(routeRulesFile);){
       routingRules.parseRules(fin);
