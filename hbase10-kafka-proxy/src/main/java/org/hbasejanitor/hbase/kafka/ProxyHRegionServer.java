@@ -86,6 +86,7 @@ import org.apache.hadoop.hbase.zookeeper.ZooKeeperWatcher;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.zookeeper.CreateMode;
+import org.hbasejanitor.hbase.event.HBase10Event;
 
 import com.google.protobuf.Message;
 import com.google.protobuf.RpcController;
@@ -106,8 +107,8 @@ public class ProxyHRegionServer
   private ServerName serverName;
   private boolean running = false;
   private Producer<byte[], byte[]> producer;
-  private DatumWriter<HBaseKafkaEvent> avroWriter =
-      new SpecificDatumWriter<HBaseKafkaEvent>(HBaseKafkaEvent.getClassSchema());
+  private DatumWriter<HBase10Event> avroWriter =
+      new SpecificDatumWriter<HBase10Event>(HBase10Event.getClassSchema());
   private TopicRoutingRules routingRules;
   
   public static final String REGION_SERVER_RPC_SCHEDULER_FACTORY_CLASS =
@@ -231,7 +232,7 @@ public class ProxyHRegionServer
 
           if (!CollectionUtils.isEmpty(topics)) {
             byte[] key = CellUtil.cloneRow(cell);
-            HBaseKafkaEvent event = new HBaseKafkaEvent();
+            HBase10Event event = new HBase10Event();
             event.setKey(ByteBuffer.wrap(key));
             event.setDelete(CellUtil.isDelete(cell));
             event.setQualifier(ByteBuffer.wrap(qualifier));
@@ -264,7 +265,7 @@ public class ProxyHRegionServer
    * @param topics topics to publish to
    * @throws Exception if message oculd not be sent
    */
-  public void pushKafkaMessage(HBaseKafkaEvent message, byte[] key, List<String> topics)
+  public void pushKafkaMessage(HBase10Event message, byte[] key, List<String> topics)
       throws Exception {
     ByteArrayOutputStream bout = new ByteArrayOutputStream();
     BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(bout, null);

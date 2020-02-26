@@ -28,7 +28,8 @@
     
     <dependency>
       <groupId>org.hbasejanitor</groupId>
-      <artifactId>hbase10-kafka-model</artifactId>
+      <artifactId>hbase10-event-model</artifactId>
+      <version>0.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     

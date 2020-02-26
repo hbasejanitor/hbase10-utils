@@ -36,6 +36,7 @@ import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.ProducerFencedException;
+import org.hbasejanitor.hbase.event.HBase10Event;
 
 /**
  * Mocks Kafka producer for testing

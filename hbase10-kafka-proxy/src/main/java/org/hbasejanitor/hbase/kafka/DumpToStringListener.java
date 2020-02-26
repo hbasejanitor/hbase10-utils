@@ -38,6 +38,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.hbasejanitor.hbase.event.HBase10Event;
 
 
 
@@ -69,8 +70,8 @@ public final class DumpToStringListener {
       LOG.error("Could not parse: ", e);
       printUsageAndExit(options, -1);
     }
-    SpecificDatumReader<HBaseKafkaEvent> dreader =
-            new SpecificDatumReader<>(HBaseKafkaEvent.SCHEMA$);
+    SpecificDatumReader<HBase10Event> dreader =
+            new SpecificDatumReader<>(HBase10Event.SCHEMA$);
 
     String topic = commandLine.getOptionValue('t');
     Properties props = new Properties();
@@ -89,7 +90,7 @@ public final class DumpToStringListener {
           ConsumerRecord<byte[], byte[]> record = it.next();
           BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(record.value(), null);
           try {
-            HBaseKafkaEvent event = dreader.read(null, decoder);
+            HBase10Event event = dreader.read(null, decoder);
             LOG.info("key :" + Bytes.toString(record.key()) + " value " + event);
           } catch (Exception e) {
             throw new RuntimeException(e);
