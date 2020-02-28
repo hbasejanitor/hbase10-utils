@@ -17,6 +17,8 @@
  */
 package org.hbasejanitor.hbase.kafka;
 
+import java.nio.ByteBuffer;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -34,6 +36,17 @@ public abstract class Rule {
 
   byte []ast = Bytes.toBytes("*");
 
+  @Override
+  public String toString() {
+    return String.format("Table %s columnFamily %s qualifier %s startsWith %s endsWith %s\n",
+      tableName.toString(),
+      new String(columnFamily==null ? "<empty>".getBytes() : columnFamily),
+      new String(qualifier==null ? "<empty>".getBytes() : qualifier),
+      qualifierStartsWith,
+      qualifierEndsWith);
+        
+  }
+  
   /**
    * Indicates if the table,column family, and qualifier match the rule
    * @param tryTable table name to test
@@ -41,7 +54,7 @@ public abstract class Rule {
    * @param tryQualifier qualifier to test
    * @return true if values match the rule
    */
-  public boolean match(TableName tryTable, byte [] tryColumFamily, byte [] tryQualifier) {
+  public boolean match(TableName tryTable, ByteBuffer tryColumFamily, ByteBuffer tryQualifier) {
     boolean tableMatch = tableMatch(tryTable);
     boolean columnFamilyMatch = columnFamilyMatch(tryColumFamily);
     boolean qualfierMatch = qualifierMatch(tryQualifier);
@@ -49,12 +62,27 @@ public abstract class Rule {
     return tableMatch && columnFamilyMatch && qualfierMatch;
   }
 
+//  /**
+//   * Indicates if the table,column family, and qualifier match the rule
+//   * @param tryTable table name to test
+//   * @param tryColumFamily column family to test
+//   * @param tryQualifier qualifier to test
+//   * @return true if values match the rule
+//   */
+//  public boolean match(TableName tryTable, byte [] tryColumFamily, byte [] tryQualifier) {
+//    boolean tableMatch = tableMatch(tryTable);
+//    boolean columnFamilyMatch = columnFamilyMatch(tryColumFamily);
+//    boolean qualfierMatch = qualifierMatch(tryQualifier);
+//
+//    return tableMatch && columnFamilyMatch && qualfierMatch;
+//  }
+  
   /**
    * Test if the qualifier matches
    * @param tryQualifier qualifier to test
    * @return true if the qualifier matches
    */
-  public boolean qualifierMatch(byte [] tryQualifier) {
+  public boolean qualifierMatch(ByteBuffer tryQualifier) {
 
     if (qualifier != null) {
       if (qualifierStartsWith && qualifierEndsWith) {
@@ -70,18 +98,31 @@ public abstract class Rule {
     return true;
   }
 
+//  /**
+//   * Test if the column family matches the rule
+//   * @param tryColumFamily column family to test
+//   * @return true if the column family matches the rule
+//   */
+//  public boolean columnFamilyMatch(byte [] tryColumFamily) {
+//    if (columnFamily != null) {
+//      return Bytes.equals(this.columnFamily, tryColumFamily);
+//    }
+//    return true;
+//  }
+
   /**
    * Test if the column family matches the rule
    * @param tryColumFamily column family to test
    * @return true if the column family matches the rule
    */
-  public boolean columnFamilyMatch(byte [] tryColumFamily) {
+  public boolean columnFamilyMatch(ByteBuffer tryColumFamily) {
     if (columnFamily != null) {
       return Bytes.equals(this.columnFamily, tryColumFamily);
     }
     return true;
   }
 
+  
   /**
    * Test if the table matches the table in the rule
    * @param tryTable table name to test
@@ -130,6 +171,32 @@ public abstract class Rule {
    * @param startsWith array that we want to see if data starts with
    * @return true if data starts with startsWith
    */
+  public static boolean startsWith(ByteBuffer data,byte [] startsWith) {
+    ByteBuffer test = data.duplicate();
+    
+    if (test.limit()-test.position() < startsWith.length) {
+      return false;
+    }
+
+    if (test.limit()-test.position() == startsWith.length) {
+      return Bytes.equals( startsWith,data);
+    }
+
+    for (int i = 0; i < startsWith.length; i++) {
+      if (test.get() != startsWith[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  
+  /**
+   * Tests if data starts with startsWith
+   * @param data byte array to test
+   * @param startsWith array that we want to see if data starts with
+   * @return true if data starts with startsWith
+   */
   public static boolean startsWith(byte [] data, byte [] startsWith) {
     if (startsWith.length > data.length) {
       return false;
@@ -147,6 +214,35 @@ public abstract class Rule {
     return true;
   }
 
+  /**
+   * Tests if data ends with endsWith
+   * @param data byte array to test
+   * @param endsWith array that we want to see if data ends with
+   * @return true if data ends with endsWith
+   */
+  public static boolean endsWith(ByteBuffer data, byte [] endsWith) {
+    ByteBuffer test = data.duplicate();
+    int size=test.limit()-test.position();
+    if (endsWith.length > size) {
+      return false;
+    }
+
+    if (endsWith.length == size) {
+      return Bytes.equals(endsWith,data);
+    }
+
+    int position=test.limit()-(endsWith.length);
+    test.position(position);
+    
+    for (int i = 0; i < endsWith.length; i++) {
+      if (endsWith[i] != test.get()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  
   /**
    * Tests if data ends with endsWith
    * @param data byte array to test

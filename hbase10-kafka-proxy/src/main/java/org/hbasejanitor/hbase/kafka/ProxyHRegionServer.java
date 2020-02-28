@@ -177,6 +177,9 @@ public class ProxyHRegionServer
       throw new IOException(e);
     }
     this.running = true;
+    
+    LOG.info("routing rules "+routingRules);
+    
   }
 
   /**
@@ -221,11 +224,13 @@ public class ProxyHRegionServer
 
           TableName table = TableName.valueOf(entry.getKey().getTableName().toByteArray());
           Cell cell = cells.current();
-          byte[] columnFamily = CellUtil.cloneFamily(cell);
-          byte[] qualifier = CellUtil.cloneQualifier(cell);
 
           List<String> topics = null;
 
+          ByteBuffer qualifier = ByteBuffer.wrap(cell.getQualifierArray(),cell.getQualifierOffset(),cell.getQualifierLength());
+          ByteBuffer columnFamily = ByteBuffer.wrap(cell.getFamilyArray(),cell.getFamilyOffset(),cell.getFamilyLength());
+          
+          
           if (!routingRules.isExclude(table, columnFamily, qualifier)) {
             topics = routingRules.getTopics(table, columnFamily, qualifier);
           }
@@ -233,10 +238,10 @@ public class ProxyHRegionServer
           if (!CollectionUtils.isEmpty(topics)) {
             byte[] key = CellUtil.cloneRow(cell);
             HBase10Event event = new HBase10Event();
-            event.setKey(ByteBuffer.wrap(key));
+            event.setKey(ByteBuffer.wrap(cell.getRowArray(),cell.getRowOffset(),cell.getRowLength()));
             event.setDelete(CellUtil.isDelete(cell));
-            event.setQualifier(ByteBuffer.wrap(qualifier));
-            event.setFamily(ByteBuffer.wrap(columnFamily));
+            event.setQualifier(qualifier);
+            event.setFamily(columnFamily);
             event.setTable(ByteBuffer.wrap(entry.getKey().getTableName().toByteArray()));
             event.setValue(ByteBuffer.wrap(CellUtil.cloneValue(cell)));
             event.setTimestamp(cell.getTimestamp());

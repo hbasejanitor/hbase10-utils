@@ -27,6 +27,13 @@
     </dependency>
     
     <dependency>
+	    <groupId>com.github.ben-manes.caffeine</groupId>
+	    <artifactId>caffeine</artifactId>
+	    <version>2.4.0</version>
+    </dependency>
+    
+    
+    <dependency>
       <groupId>org.hbasejanitor</groupId>
       <artifactId>hbase10-event-model</artifactId>
       <version>0.1-SNAPSHOT</version>

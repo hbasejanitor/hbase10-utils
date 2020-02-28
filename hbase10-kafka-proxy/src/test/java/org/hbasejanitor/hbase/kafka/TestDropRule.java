@@ -15,6 +15,7 @@
 package org.hbasejanitor.hbase.kafka;
 
 import java.io.ByteArrayInputStream;
+import java.nio.ByteBuffer;
 
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -115,11 +116,11 @@ public class TestDropRule {
 
       DropRule drop = rules.getDropRules().get(0);
       Assert.assertFalse(
-        drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(), "blah".getBytes()));
+        drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()), ByteBuffer.wrap("blah".getBytes())));
       Assert.assertFalse(
-        drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(), "dholdme".getBytes()));
+        drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()), ByteBuffer.wrap("dholdme".getBytes())));
       Assert.assertTrue(
-        drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(), "dhold:me".getBytes()));
+        drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()), ByteBuffer.wrap("dhold:me".getBytes())));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -143,11 +144,11 @@ public class TestDropRule {
 
       DropRule drop = rules.getDropRules().get(0);
       Assert.assertFalse(
-        drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(), "blah".getBytes()));
-      Assert.assertFalse(drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(),
-        "blacickme".getBytes()));
-      Assert.assertTrue(drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(),
-        "hithere.pickme".getBytes()));
+        drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()), ByteBuffer.wrap("blah".getBytes())));
+      Assert.assertFalse(drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()),
+        ByteBuffer.wrap("blacickme".getBytes())));
+      Assert.assertTrue(drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()),
+        ByteBuffer.wrap("hithere.pickme".getBytes())));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -171,17 +172,17 @@ public class TestDropRule {
 
       DropRule drop = rules.getDropRules().get(0);
       Assert.assertFalse(
-        drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(), "blah".getBytes()));
-      Assert.assertFalse(drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(),
-        "blacickme".getBytes()));
-      Assert.assertTrue(drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(),
-        "hithere.pickme".getBytes()));
-      Assert.assertTrue(drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(),
-        "pickme.pleaze.do.it".getBytes()));
-      Assert.assertFalse(drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(),
-        "please.pickme.pleaze".getBytes()));
-      Assert.assertTrue(drop.match(TableName.valueOf("default:MyTable"), "data".getBytes(),
-        "pickme.pleaze.pickme".getBytes()));
+        drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()), ByteBuffer.wrap("blah".getBytes())));
+      Assert.assertFalse(drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()),
+        ByteBuffer.wrap("blacickme".getBytes())));
+      Assert.assertTrue(drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()),
+        ByteBuffer.wrap("hithere.pickme".getBytes())));
+      Assert.assertTrue(drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()),
+        ByteBuffer.wrap("pickme.pleaze.do.it".getBytes())));
+      Assert.assertFalse(drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()),
+        ByteBuffer.wrap("please.pickme.pleaze".getBytes())));
+      Assert.assertTrue(drop.match(TableName.valueOf("default:MyTable"), ByteBuffer.wrap("data".getBytes()),
+        ByteBuffer.wrap("pickme.pleaze.pickme".getBytes())));
 
     } catch (Exception e) {
       e.printStackTrace();

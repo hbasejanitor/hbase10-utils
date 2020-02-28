@@ -14,6 +14,8 @@
  */
 package org.hbasejanitor.hbase.kafka;
 
+import java.nio.ByteBuffer;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,15 +28,15 @@ public class TestQualifierMatching {
   public void testMatchQualfier() {
     DropRule rule = new DropRule();
     rule.setQualifier("data".getBytes());
-    Assert.assertTrue(rule.qualifierMatch("data".getBytes()));
+    Assert.assertTrue(rule.qualifierMatch(ByteBuffer.wrap("data".getBytes())));
 
     rule = new DropRule();
     rule.setQualifier("data1".getBytes());
-    Assert.assertFalse(rule.qualifierMatch("data".getBytes()));
+    Assert.assertFalse(rule.qualifierMatch(ByteBuffer.wrap("data".getBytes())));
 
     // if not set, it is a wildcard
     rule = new DropRule();
-    Assert.assertTrue(rule.qualifierMatch("data".getBytes()));
+    Assert.assertTrue(rule.qualifierMatch(ByteBuffer.wrap("data".getBytes())));
   }
 
   @Test
@@ -44,12 +46,12 @@ public class TestQualifierMatching {
     Assert.assertTrue(rule.isQualifierStartsWith());
     Assert.assertFalse(rule.isQualifierEndsWith());
 
-    Assert.assertTrue(rule.qualifierMatch("data".getBytes()));
-    Assert.assertTrue(rule.qualifierMatch("data1".getBytes()));
-    Assert.assertTrue(rule.qualifierMatch("datafoobar".getBytes()));
-    Assert.assertFalse(rule.qualifierMatch("datfoobar".getBytes()));
-    Assert.assertFalse(rule.qualifierMatch("d".getBytes()));
-    Assert.assertFalse(rule.qualifierMatch("".getBytes()));
+    Assert.assertTrue(rule.qualifierMatch(ByteBuffer.wrap("data".getBytes())));
+    Assert.assertTrue(rule.qualifierMatch(ByteBuffer.wrap("data1".getBytes())));
+    Assert.assertTrue(rule.qualifierMatch(ByteBuffer.wrap("datafoobar".getBytes())));
+    Assert.assertFalse(rule.qualifierMatch(ByteBuffer.wrap("datfoobar".getBytes())));
+    Assert.assertFalse(rule.qualifierMatch(ByteBuffer.wrap("d".getBytes())));
+    Assert.assertFalse(rule.qualifierMatch(ByteBuffer.wrap("".getBytes())));
   }
 
   @Test
@@ -59,12 +61,15 @@ public class TestQualifierMatching {
     Assert.assertFalse(rule.isQualifierStartsWith());
     Assert.assertTrue(rule.isQualifierEndsWith());
 
-    Assert.assertTrue(rule.qualifierMatch("data".getBytes()));
-    Assert.assertTrue(rule.qualifierMatch("1data".getBytes()));
-    Assert.assertTrue(rule.qualifierMatch("foobardata".getBytes()));
-    Assert.assertFalse(rule.qualifierMatch("foobardat".getBytes()));
-    Assert.assertFalse(rule.qualifierMatch("d".getBytes()));
-    Assert.assertFalse(rule.qualifierMatch("".getBytes()));
+    Assert.assertTrue(rule.qualifierMatch(ByteBuffer.wrap("data".getBytes())));
+    Assert.assertTrue(rule.qualifierMatch(ByteBuffer.wrap("1data".getBytes())));
+    
+    
+    
+    Assert.assertTrue(rule.qualifierMatch(ByteBuffer.wrap("foobardata".getBytes())));
+    Assert.assertFalse(rule.qualifierMatch(ByteBuffer.wrap("foobardat".getBytes())));
+    Assert.assertFalse(rule.qualifierMatch(ByteBuffer.wrap("d".getBytes())));
+    Assert.assertFalse(rule.qualifierMatch(ByteBuffer.wrap("".getBytes())));
   }
 
 }

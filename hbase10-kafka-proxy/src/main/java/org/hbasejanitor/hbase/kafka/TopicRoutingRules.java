@@ -21,6 +21,7 @@ package org.hbasejanitor.hbase.kafka;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -87,6 +89,17 @@ public class TopicRoutingRules {
 
   }
 
+  @Override
+  public String toString() {
+    StringBuffer buff = new StringBuffer();
+    buff.append("\nDrop rules\n");
+    dropRules.stream().forEach(rule ->buff.append(rule.toString()));
+    buff.append("\nRoute rules\n");
+    routeRules.stream().forEach(rule ->buff.append(rule.toString()));
+    
+    return buff.toString();
+  }
+  
   /**
    * construct rule set from file
    * @param source file that countains the rule set
@@ -186,6 +199,23 @@ public class TopicRoutingRules {
     }
   }
 
+//  /**
+//   * Indicates if a cell mutation should be dropped instead of routed to kafka.
+//   * @param table table name to check
+//   * @param columnFamily column family to check
+//   * @param qualifer qualifier name to check
+//   * @return if the mutation should be dropped instead of routed to Kafka
+//   */
+//  public boolean isExclude(final TableName table, final byte []columnFamily,
+//                           final byte[] qualifer) {
+//    for (DropRule r : getDropRules()) {
+//      if (r.match(table, columnFamily, qualifer)) {
+//        return true;
+//      }
+//    }
+//    return false;
+//  }
+
   /**
    * Indicates if a cell mutation should be dropped instead of routed to kafka.
    * @param table table name to check
@@ -193,8 +223,8 @@ public class TopicRoutingRules {
    * @param qualifer qualifier name to check
    * @return if the mutation should be dropped instead of routed to Kafka
    */
-  public boolean isExclude(final TableName table, final byte []columnFamily,
-                           final byte[] qualifer) {
+  public boolean isExclude(final TableName table, final ByteBuffer columnFamily,
+                           final ByteBuffer qualifer) {
     for (DropRule r : getDropRules()) {
       if (r.match(table, columnFamily, qualifer)) {
         return true;
@@ -202,6 +232,24 @@ public class TopicRoutingRules {
     }
     return false;
   }
+  
+//  /**
+//   * Get topics for the table/column family/qualifier combination
+//   * @param table table name to check
+//   * @param columnFamily column family to check
+//   * @param qualifer qualifier name to check
+//   * @return list of topics that match the passed in values (or empty for none).
+//   */
+//  public List<String> getTopics(TableName table, byte []columnFamily, byte []qualifer) {
+//    List<String> ret = new ArrayList<>();
+//    for (TopicRule r : getRouteRules()) {
+//      if (r.match(table, columnFamily, qualifer)) {
+//        ret.addAll(r.getTopics());
+//      }
+//    }
+//    ret = ret.stream().sorted().distinct().collect(Collectors.toList());
+//    return ret;
+//  }
 
   /**
    * Get topics for the table/column family/qualifier combination
@@ -210,7 +258,7 @@ public class TopicRoutingRules {
    * @param qualifer qualifier name to check
    * @return list of topics that match the passed in values (or empty for none).
    */
-  public List<String> getTopics(TableName table, byte []columnFamily, byte []qualifer) {
+  public List<String> getTopics(TableName table, ByteBuffer columnFamily, ByteBuffer qualifer) {
     List<String> ret = new ArrayList<>();
     for (TopicRule r : getRouteRules()) {
       if (r.match(table, columnFamily, qualifer)) {
@@ -220,7 +268,7 @@ public class TopicRoutingRules {
     ret = ret.stream().sorted().distinct().collect(Collectors.toList());
     return ret;
   }
-
+  
   /**
    * returns all the drop rules (used for testing)
    * @return drop rules
