@@ -238,7 +238,7 @@ public class ProxyHRegionServer
           if (!CollectionUtils.isEmpty(topics)) {
             byte[] key = CellUtil.cloneRow(cell);
             HBase10Event event = new HBase10Event();
-            event.setKey(key);
+            event.setKey(ByteBuffer.wrap(key));
             event.setDelete(CellUtil.isDelete(cell));
             event.setQualifier(qualifier);
             event.setFamily(columnFamily);

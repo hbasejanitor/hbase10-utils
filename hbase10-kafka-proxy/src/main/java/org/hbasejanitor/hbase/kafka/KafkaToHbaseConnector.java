@@ -158,7 +158,6 @@ public class KafkaToHbaseConnector extends Configured implements Tool {
               event.getQualifier().duplicate().get(qualifier);
               delete.addColumn(family, qualifier,event.getTimestamp());
               hbaseTable.delete(delete);
-              
             } else {
               Put myPut = new Put(event.getKey().duplicate());
               byte family[] = new byte[event.getFamily().limit()-event.getFamily().position()];
