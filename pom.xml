@@ -29,7 +29,7 @@
   </modules>
 
   <properties>
-    <avro.version>1.7.7</avro.version>
+    <avro.version>1.11.3</avro.version>
     <hbase10.version>1.2.0</hbase10.version>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
